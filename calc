@@ -1,0 +1,67 @@
+# Função para simular o crescimento do patrimônio até a idade alvo
+def simular_patrimonio(idade, capital, aporte_mensal, rendimento_anual, dividendos_anuais, idade_alvo, idade_consumo):
+    # Calculando o número total de meses de investimento até a idade alvo
+    meses_total = (idade_alvo - idade) * 12
+
+    # Loop para simular o crescimento mês a mês até a idade alvo
+    for mes in range(meses_total):
+        # Calculando rendimento da carteira no mês
+        rendimento_mensal = capital * (rendimento_anual / 12)
+
+        # Atualizando o capital com o aporte mensal e o rendimento mensal até a idade alvo
+        if idade + mes / 12 < idade_alvo:
+            capital += aporte_mensal + rendimento_mensal
+        else:
+            # A partir da idade alvo, utilizamos 50% do rendimento mensal
+            capital += rendimento_mensal * 0.5
+
+        # Verificando se é o final do ano para reinvestir os dividendos até a idade alvo
+        if idade + mes / 12 < idade_alvo and (mes + 1) % 12 == 0:
+            dividendos_anuais_total = capital * dividendos_anuais
+            capital += dividendos_anuais_total
+
+    return capital
+
+# Capturando os dados iniciais do usuário
+print("Por favor, insira os dados iniciais:")
+idade = int(input("Idade atual: "))
+capital = float(input("Capital inicial (R$): "))
+aporte_mensal = float(input("Aporte mensal (R$): "))
+rendimento_anual = float(input("Rendimento anual da carteira (decimal): "))
+dividendos_anuais = float(input("Percentual de dividendos anuais (decimal): "))
+idade_alvo = int(input("Até que idade deseja simular o patrimônio (em anos): "))
+idade_consumo = int(input("Em que idade você deseja saber seu patrimônio após começar a consumir 50% da rentabilidade: "))
+
+# Calculando o patrimônio até a idade alvo
+patrimonio_ate_idade_alvo = simular_patrimonio(idade, capital, aporte_mensal, rendimento_anual, dividendos_anuais, idade_alvo, idade_consumo)
+
+# Exibindo o patrimônio final até a idade alvo
+print(f"Patrimônio acumulado até {idade_alvo} anos: R$ {patrimonio_ate_idade_alvo:.2f}")
+
+# Calculando o patrimônio após o período de consumo
+if idade_consumo > idade_alvo:
+    # Calculando o número de meses de consumo
+    meses_total_consumo = (idade_consumo - idade_alvo) * 12
+
+    # Simulando o crescimento do patrimônio após a idade alvo
+    for mes in range(meses_total_consumo):
+        # Calculando rendimento da carteira no mês
+        rendimento_mensal = capital * (rendimento_anual / 12)
+
+        # Utilizando 50% dos rendimentos do mês como consumo
+        consumo = rendimento_mensal * 0.5
+        capital -= consumo
+
+        # Reinvestindo os outros 50% dos rendimentos do mês
+        capital += rendimento_mensal * 0.5
+
+        # Verificando se é o final do ano para reinvestir os dividendos
+        if (mes + 1) % 12 == 0:
+            dividendos_anuais_total = capital * dividendos_anuais
+            capital += dividendos_anuais_total
+
+    # Patrimônio após o período de consumo
+    patrimonio_apos_consumo = capital
+    print(f"Patrimônio aos {idade_consumo} anos após consumir 50% da rentabilidade anual: R$ {patrimonio_apos_consumo:.2f}")
+else:
+    print("A idade de consumo deve ser maior que a idade alvo.")
